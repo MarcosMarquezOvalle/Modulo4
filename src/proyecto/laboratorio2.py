@@ -1,6 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import field
-from datetime import datetime, timezone
-from pydantic import BaseModel, ConfigDict
+from datetime import datetime
+from datetime import timezone
+
+from pydantic import BaseModel
+from pydantic import ConfigDict
 
 
 class OrderIn(BaseModel):
@@ -24,12 +29,12 @@ class OrderIn(BaseModel):
             return NotImplemented
         return self.order_id == other.order_id
 
-    def __lt__(self, other: "OrderIn") -> bool:
+    def __lt__(self, other: OrderIn) -> bool:
         if not isinstance(other, OrderIn):
             return NotImplemented
         return self.total < other.total
 
-    def __le__(self, other: "OrderIn") -> bool:
+    def __le__(self, other: OrderIn) -> bool:
         if not isinstance(other, OrderIn):
             return NotImplemented
         return self.total <= other.total
@@ -69,6 +74,7 @@ class OrderOut(BaseModel):
             return NotImplemented
         return self.total <= other.total
 
+
 class OrderEntity:
     def __init__(self, order_id=None, customer_id=None, product_id=None, quantity=None, price=None, tax_percentage=None, created_at=None):
         self.order_id = order_id
@@ -80,9 +86,18 @@ class OrderEntity:
         self.created_at = created_at or datetime.now(timezone.utc)
 
 
-order_entrada_1 = OrderIn(order_id=1, customer_id=1, product_id=1, quantity=1, price=1000.0, tax_percentage=16.0)
-order_entrada_2 = OrderIn(order_id=2, customer_id=2, product_id=2, quantity=1, price=600.0, tax_percentage=16.0)
-order_entrada_3 = OrderIn(order_id=3, customer_id=3, product_id=3, quantity=1, price=300.0, tax_percentage=16.0)
+order_entrada_1 = OrderIn(
+    order_id=1, customer_id=1, product_id=1,
+    quantity=1, price=1000.0, tax_percentage=16.0,
+)
+order_entrada_2 = OrderIn(
+    order_id=2, customer_id=2,
+    product_id=2, quantity=1, price=600.0, tax_percentage=16.0,
+)
+order_entrada_3 = OrderIn(
+    order_id=3, customer_id=3,
+    product_id=3, quantity=1, price=300.0, tax_percentage=16.0,
+)
 
 # --- PROCESO DE CONVERSIÓN ---
 
@@ -93,4 +108,3 @@ nueva_entidad.order_id = 1
 respuesta_cliente = OrderOut.model_validate(nueva_entidad)
 
 print(respuesta_cliente.json())
-
